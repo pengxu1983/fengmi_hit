@@ -24,9 +24,9 @@ module.exports.routes = {
   *                                                                          *
   ***************************************************************************/
 
-  '/': {
-    view: 'pages/homepage'
-  },
+  //'/': {
+  //  view: 'pages/homepage'
+  //},
 
   /***************************************************************************
   *                                                                          *
@@ -38,14 +38,63 @@ module.exports.routes = {
   * not match any of those, it is matched against static assets.             *
   *                                                                          *
   ***************************************************************************/
-
-
+  'GET /' :  '/main',
   //  ╔═╗╔═╗╦  ╔═╗╔╗╔╔╦╗╔═╗╔═╗╦╔╗╔╔╦╗╔═╗
   //  ╠═╣╠═╝║  ║╣ ║║║ ║║╠═╝║ ║║║║║ ║ ╚═╗
   //  ╩ ╩╩  ╩  ╚═╝╝╚╝═╩╝╩  ╚═╝╩╝╚╝ ╩ ╚═╝
+  'POST /users/create'  : {
+    action  : 'users/create'
+  },
+  'POST /users/delete'  : {
+    action  : 'users/delete'
+  },
+  'POST /users/find'  : {
+    action  : 'users/find'
+  },
+  'POST /users/update'  : {
+    action  : 'users/update'
+  },
 
+  'POST /projects/create'  : {
+    action  : 'projects/create'
+  },
+  'POST /projects/delete'  : {
+    action  : 'projects/delete'
+  },
+  'POST /projects/find'  : {
+    action  : 'projects/find'
+  },
+  'POST /projects/update'  : {
+    action  : 'projects/update'
+  },
 
+  'POST /courses/create'  : {
+    action  : 'courses/create'
+  },
+  'POST /courses/delete'  : {
+    action  : 'courses/delete'
+  },
+  'POST /courses/find'  : {
+    action  : 'courses/find'
+  },
+  'POST /courses/update'  : {
+    action  : 'courses/update'
+  },
 
+  'POST /projectssharehold/create' : {
+    action  : 'projects-sharehold/create'
+  },
+  'POST /projectssharehold/delete' : {
+    action  : 'projects-sharehold/delete'
+  },
+  'POST /projectssharehold/update' : {
+    action  : 'projects-sharehold/update'
+  },
+  'POST /projectssharehold/find' : {
+    action  : 'projects-sharehold/find'
+  },
+
+  //'POST /usermain'  : '/usermain',
   //  ╦ ╦╔═╗╔╗ ╦ ╦╔═╗╔═╗╦╔═╔═╗
   //  ║║║║╣ ╠╩╗╠═╣║ ║║ ║╠╩╗╚═╗
   //  ╚╩╝╚═╝╚═╝╩ ╩╚═╝╚═╝╩ ╩╚═╝
