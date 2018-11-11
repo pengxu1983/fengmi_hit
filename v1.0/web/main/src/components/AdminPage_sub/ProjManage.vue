@@ -1,0 +1,453 @@
+<template>
+  <div >
+    <button type="button" class="btn btn-primary btn-lg btn-block" data-toggle="modal" data-target="#projectcreate">新增项目</button>
+    <hr />
+    <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="projectcreate">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <form>
+            <div class="form-group">
+              <label for="projectname">项目名称</label>
+              <input type="text" class="form-control" id="projectname"
+                v-model="projectname"
+              >
+            </div>
+            <div class="form-group">
+              <label for="targetmoney">目标融资</label>
+              <input type="text" class="form-control" id="targetmoney" placeholder="万"
+                v-model="targetmoney"
+              >
+            </div>
+            <div class="form-group">
+              <label for="roadshowstart">路演开始时间</label>
+              <input type="text" class="form-control" id="roadshowstart" 
+                v-model="roadshowstart"
+              >
+            </div>
+            <div class="form-group">
+              <label for="roadshowend">路演结束时间</label>
+              <input type="text" class="form-control" id="roadshowend" 
+                v-model="roadshowend"
+              >
+            </div>
+            <div class="form-group">
+              <label for="subscribestart">预订开始时间</label>
+              <input type="text" class="form-control" id="subscribestart" 
+                v-model="subscribestart"
+              >
+            </div>
+            <div class="form-group">
+              <label for="subscribeend">预订结束时间</label>
+              <input type="text" class="form-control" id="subscribeend" 
+                v-model="subscribeend"
+              >
+            </div>
+            <div class="form-group">
+              <label for="confirmstart">打款开始时间</label>
+              <input type="text" class="form-control" id="confirmstart" 
+                v-model="confirmstart"
+              >
+            </div>
+            <div class="form-group">
+              <label for="confirmend">打款结束时间</label>
+              <input type="text" class="form-control" id="confirmend" 
+                v-model="confirmend"
+              >
+            </div>
+            <button type="submit" class="btn btn-primary"
+              @click="create"
+            >新建</button>
+            <p>{{ createmsg }}</p>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div
+      v-for="oneproject in projectlist"
+    >
+      <table class="table table-bordered">
+        <tbody>
+          <tr class="table-info">
+            <th scope="row">项目名称</th>
+            <td>{{ oneproject.projectname}}</td>
+            <td>
+              <button type="button" class="btn btn-primary" data-toggle="modal" 
+                :data-target="'#projectedit'+oneproject.projectname"
+              >编辑
+              </button>
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">目标融资额</th>
+            <td colspan="2">{{oneproject.targetmoney}}</td>
+          </tr>
+          <tr>
+            <th scope="row">实际融资额</th>
+            <td colspan="2">{{oneproject.actualmoney}}</td>
+          </tr>
+          <tr>
+            <th scope="row">项目状态</th>
+            <td>{{oneproject.isvalid}}</td>
+            <td>
+              <button type="button" class="btn btn-primary" data-toggle="modal" 
+                :data-target="'#shareholdedit'+oneproject.projectname"
+              >投资配额
+              </button>
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">已经预订人数</th>
+            <td colspan="2">{{oneproject.subscribesum}}</td>
+          </tr>
+          <tr>
+            <th scope="row">已经打款人数</th>
+            <td colspan="2">{{oneproject.confirmsum}}</td>
+          </tr>
+          <tr>
+            <th scope="row">路演起止时间</th>
+            <td>{{oneproject.roadshowstart}}</td>
+            <td>{{oneproject.roadshowend}}</td>
+          </tr>
+          <tr>
+            <th scope="row">预融资起止时间</th>
+            <td>{{oneproject.subscribestart}}</td>
+            <td>{{oneproject.subscribeend}}</td>
+          </tr>
+          <tr>
+            <th scope="row">打款起止时间</th>
+            <td>{{oneproject.confirmstart}}</td>
+            <td>{{oneproject.confirmend}}</td>
+          </tr>
+        </tbody>
+      </table>
+      <hr />
+      <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true"
+        :id="'shareholdedit'+oneproject.projectname"
+      >
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <h2>{{oneproject.projectname}}</h2>
+            <button type="button" class="btn btn-primary btn-lg btn-block">新增参投人</button>
+            <el-table
+              :data="tableData4"
+              border
+              style="width: 100%">
+              <el-table-column
+                prop="slvusername"
+                label="姓名"
+              >
+              </el-table-column>
+              <el-table-column
+                prop="institute"
+                label="学院"
+              >
+                <template slot-scope="scope">
+                  <el-select v-model="value" placeholder="请选择">
+                    <el-option
+                      v-for="item in options"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                    </el-option>
+                  </el-select>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="sharehold"
+                label="持有额度"
+              >
+              </el-table-column>
+              <el-table-column
+                prop="slvmoney"
+                label="分红额度"
+              >
+              </el-table-column>
+              <el-table-column
+                prop="isconfirmed"
+                label="是否打款"
+              >
+              </el-table-column>
+              <el-table-column
+                prop="hstusername"
+                label="代持人"
+              >
+              </el-table-column>
+              <el-table-column
+                fixed="right"
+                label="操作"
+              >
+                <template slot-scope="scope">
+                  <el-button
+                    @click.native.prevent="deleteRow(scope.$index, tableData4)"
+                    type="text"
+                    size="small">
+                    移除
+                  </el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+            <button type="button" class="btn btn-primary">保存</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true"
+        :id="'projectedit'+oneproject.projectname"
+      >
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <table class="table table-bordered">
+              <tbody>
+                <tr class="table-info">
+                  <th scope="row">项目名称</th>
+                  <td colspan="2">
+                    <input 
+                      v-model="oneproject.projectname" disabled
+                    >
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row">目标融资额</th>
+                  <td colspan="2">
+                    <input 
+                      v-model="oneproject.targetmoney"
+                    >
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row">实际融资额</th>
+                  <td colspan="2">
+                    <input 
+                      v-model="oneproject.actualmoney" disabled
+                    >
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row">项目状态</th>
+                  <td colspan="2">
+                    <select class="custom-select d-block w-100" id="country" required
+                      v-model="oneproject.isvalid"
+                    >
+                      <option disabled value="">选择</option>
+                      <option>取消</option>
+                      <option>有效</option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row">路演起止时间</th>
+                  <td>
+                    <input 
+                      v-model="oneproject.roadshowstart"
+                    >
+                  </td>
+                  <td>
+                    <input 
+                      v-model="oneproject.roadshowend"
+                    >
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row">预融资起止时间</th>
+                  <td>
+                    <input 
+                      v-model="oneproject.subscribestart"
+                    >
+                  </td>
+                  <td>
+                    <input 
+                      v-model="oneproject.subscribeend"
+                    >
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row">打款起止时间</th>
+                  <td>
+                    <input 
+                      v-model="oneproject.confirmstart"
+                    >
+                  </td>
+                  <td>
+                    <input 
+                      v-model="oneproject.confirmend"
+                    >
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <button type="submit" class="btn btn-primary"
+              @click="updateoneproject(oneproject.projectname)"
+            >更新</button>
+            <p>{{ updatemsg }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'ProjManage',
+  props: {
+  },
+  data  : function(){
+    return  {
+      createmsg     : '',
+      updatemsg     : '',
+      projectname   : '',
+      targetmoney   : '',
+      roadshowstart : '',
+      roadshowend   : '',
+      subscribestart: '',
+      subscribeend  : '',
+      confirmstart  : '',
+      confirmend    : '',
+      projectlist   : [],
+      tableData4    : [
+        {
+          slvusername : 'pengxu',
+          institute   : '哈工大'
+        },
+      ],
+      options: [{
+        value: '选项1',
+        label: '黄金糕'
+      }, {
+        value: '选项2',
+        label: '双皮奶'
+      }, {
+        value: '选项3',
+        label: '蚵仔煎'
+      }, {
+        value: '选项4',
+        label: '龙须面'
+      }, {
+        value: '选项5',
+        label: '北京烤鸭'
+      }],
+      value: ''
+    }
+  },
+  methods : {
+    create  : function(){
+      this.createmsg  = '';
+      if(this.projectname ==  ''){
+        this.createmsg  = '项目名称为空';
+      }
+      else  {
+        this.$http.post('/projects/create',{
+          kind          : 'create',
+          projectname   : this.projectname    ,
+          targetmoney   : this.targetmoney    ,
+          roadshowstart : this.roadshowstart  ,
+          roadshowend   : this.roadshowend    ,
+          subscribestart: this.subscribestart ,
+          subscribeend  : this.subscribeend   ,
+          confirmstart  : this.confirmstart   ,
+          confirmend    : this.confirmend     
+        }).then(
+          function(response){
+            if(response.body.ok ==  'ok'){
+              this.createmsg  = response.body.msg;
+              this.projectname     = '';
+              this.targetmoney     = '';
+              this.roadshowstart   = '';
+              this.roadshowend     = '';
+              this.subscribestart  = '';
+              this.subscribeend    = '';
+              this.confirmstart    = '';
+              this.confirmend      = '';
+              this.findallprojects();
+            }
+            else if(response.body.ok ==  'notok'){
+              this.createmsg  = response.body.msg;
+              this.projectname     = '';
+              this.targetmoney     = '';
+              this.roadshowstart   = '';
+              this.roadshowend     = '';
+              this.subscribestart  = '';
+              this.subscribeend    = '';
+              this.confirmstart    = '';
+              this.confirmend      = '';
+            }
+          },
+          function(){}
+        );
+      }
+    },
+    updateoneproject : function(projname){
+      this.updatemsg  = '';
+      for(var i=0;i<this.projectlist.length;i++){
+        if(this.projectlist[i].projectname == projname){
+          this.$http.post('/projects/update',{
+            kind            : 'oneprojectupdate',
+            projectname     : this.projectlist[i].projectname    ,
+            targetmoney     : this.projectlist[i].targetmoney    ,
+            roadshowstart   : this.projectlist[i].roadshowstart  ,
+            roadshowend     : this.projectlist[i].roadshowend    ,
+            subscribestart  : this.projectlist[i].subscribestart ,
+            subscribeend    : this.projectlist[i].subscribeend   ,
+            confirmstart    : this.projectlist[i].confirmstart   ,
+            confirmend      : this.projectlist[i].confirmend     ,
+            isvalid         : this.projectlist[i].isvalid        ,
+            subscribesum    : this.projectlist[i].subscribesum   ,
+            confirmsum      : this.projectlist[i].confirmsum     ,
+          }).then(
+            function(response){
+              if(response.body.ok ==  'ok'){
+                this.updatemsg  = '更新成功';
+              }
+              else if(response.body.ok ==  'notok'){
+                this.updatemsg  = '更新失败';
+              }
+            },
+            function(){
+              this.updatemsg  = '更新失败';
+            }
+          );
+        }
+      }
+
+    },
+    findallprojects : function(){
+      this.$http.post('/projects/find',{
+        kind    :     'findall'
+      }).then(
+        function(response){
+          if(response.body.ok ==  'ok'){
+            this.projectlist  = response.body.projectlist;
+          }
+          else if(response.body.ok  ==  'notok'){
+            this.projectlist  = [];
+          }
+        },
+        function(){
+          this.projectlist  = [];
+        }
+      );
+    },
+    deleteRow(index, rows) {
+      rows.splice(index, 1);
+    }
+  },
+  mounted : function () {
+    this.$http.post('/projects/find',{
+      kind    :     'findall'
+    }).then(
+      function(response){
+        if(response.body.ok ==  'ok'){
+          this.projectlist  = response.body.projectlist;
+        }
+        else if(response.body.ok  ==  'notok'){
+          this.projectlist  = [];
+        }
+      },
+      function(){}
+    );
+  },
+}
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
+</style>
