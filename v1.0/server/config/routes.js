@@ -82,16 +82,16 @@ module.exports.routes = {
   },
 
   'POST /projectssharehold/create' : {
-    action  : 'projects-sharehold/create'
+    action  : 'projectssharehold/create'
   },
   'POST /projectssharehold/delete' : {
-    action  : 'projects-sharehold/delete'
+    action  : 'projectssharehold/delete'
   },
   'POST /projectssharehold/update' : {
-    action  : 'projects-sharehold/update'
+    action  : 'projectssharehold/update'
   },
   'POST /projectssharehold/find' : {
-    action  : 'projects-sharehold/find'
+    action  : 'projectssharehold/find'
   },
 
   //'POST /usermain'  : '/usermain',

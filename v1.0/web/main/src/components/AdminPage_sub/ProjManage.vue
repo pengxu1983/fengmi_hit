@@ -123,28 +123,42 @@
       <hr />
       <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true"
         :id="'shareholdedit'+oneproject.projectname"
+        @click="initshareholdinfo(oneproject.projectname)"
       >
         <div class="modal-dialog modal-lg">
           <div class="modal-content">
             <h2>{{oneproject.projectname}}</h2>
-            <button type="button" class="btn btn-primary btn-lg btn-block">新增参投人</button>
+            <button type="button" class="btn btn-primary btn-lg btn-block" 
+              @click="addonesharehold(oneproject.projectname)"
+            >新增参投人</button>
             <el-table
-              :data="tableData4"
+              :data="sharehold_info"
               border
               style="width: 100%">
               <el-table-column
-                prop="slvusername"
+                prop="slvrealname"
                 label="姓名"
               >
+                <template slot-scope="scope">
+                  <el-input v-model="scope.row.slvrealname" placeholder="姓名"></el-input>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="slvusername"
+                label="用户名"
+              >
+                <template slot-scope="scope">
+                  <el-input v-model="scope.row.slvusername" placeholder="用户名"></el-input>
+                </template>
               </el-table-column>
               <el-table-column
                 prop="institute"
                 label="学院"
               >
                 <template slot-scope="scope">
-                  <el-select v-model="value" placeholder="请选择">
+                  <el-select v-model="scope.row.institute" placeholder="请选择">
                     <el-option
-                      v-for="item in options"
+                      v-for="item in institute_options"
                       :key="item.value"
                       :label="item.label"
                       :value="item.value">
@@ -153,24 +167,51 @@
                 </template>
               </el-table-column>
               <el-table-column
-                prop="sharehold"
+                prop="holdmoney"
                 label="持有额度"
               >
+                <template slot-scope="scope">
+                  <el-input v-model="scope.row.holdmoney" placeholder="金额"></el-input>
+                </template>
               </el-table-column>
               <el-table-column
                 prop="slvmoney"
                 label="分红额度"
               >
+                <template slot-scope="scope">
+                  <el-input v-model="scope.row.slvmoney" placeholder="金额"></el-input>
+                </template>
               </el-table-column>
               <el-table-column
                 prop="isconfirmed"
                 label="是否打款"
               >
+                <template slot-scope="scope">
+                  <el-select v-model="scope.row.isconfirmed" placeholder="请选择">
+                    <el-option
+                      v-for="item in isconfirmed_options"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                    </el-option>
+                  </el-select>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="hstrealname"
+                label="代持人"
+              >
+                <template slot-scope="scope">
+                  <el-input v-model="scope.row.hstrealname" placeholder="代持人"></el-input>
+                </template>
               </el-table-column>
               <el-table-column
                 prop="hstusername"
-                label="代持人"
+                label="代持人用户名"
               >
+                <template slot-scope="scope">
+                  <el-input v-model="scope.row.hstusername" placeholder="代持人用户名"></el-input>
+                </template>
               </el-table-column>
               <el-table-column
                 fixed="right"
@@ -178,7 +219,7 @@
               >
                 <template slot-scope="scope">
                   <el-button
-                    @click.native.prevent="deleteRow(scope.$index, tableData4)"
+                    @click.native.prevent="deleteRow(scope.$index, sharehold_info)"
                     type="text"
                     size="small">
                     移除
@@ -186,7 +227,9 @@
                 </template>
               </el-table-column>
             </el-table>
-            <button type="button" class="btn btn-primary">保存</button>
+            <button type="button" class="btn btn-primary"
+              @click="upload_sharehold_info(oneproject.projectname)"
+            >保存</button>
           </div>
         </div>
       </div>
@@ -303,32 +346,78 @@ export default {
       confirmstart  : '',
       confirmend    : '',
       projectlist   : [],
-      tableData4    : [
+      sharehold_info_org: [
         {
+          slvrealname : '彭旭',
           slvusername : 'pengxu',
-          institute   : '哈工大'
+          institute   : '哈工大',
+          slvmoney    : 100,
+          holdmoney   : 0,
+          hstrealname : '邹星汉',
+          hstusername : 'zouxinghan',
+          isconfirmed : '是'
         },
       ],
-      options: [{
-        value: '选项1',
-        label: '黄金糕'
-      }, {
-        value: '选项2',
-        label: '双皮奶'
-      }, {
-        value: '选项3',
-        label: '蚵仔煎'
-      }, {
-        value: '选项4',
-        label: '龙须面'
-      }, {
-        value: '选项5',
-        label: '北京烤鸭'
-      }],
-      value: ''
+      institute_options: [
+        {
+          value: '哈工大',
+          label: '哈工大'
+        },{
+          value: '疯蜜总部',
+          label: '疯蜜总部'
+        },{
+          value: '其他',
+          label: '其他'
+        }
+      ],
+      isconfirmed_options : [
+        {
+          value : '是',
+          label : '否'
+        },{
+          value : '是',
+          label : '否'
+        }
+      ],
+    }
+  },
+  computed  : {
+    sharehold_info  : function(){
+      var sharehold_info = [];
+      for(var i=0;i<this.sharehold_info_org.length;i++){
+        sharehold_info[i] = {
+          slvname     : this.sharehold_info_org[i].slvrealname + '(' +this.sharehold_info_org[i].slvusername + ')',
+          hstname     : this.sharehold_info_org[i].hstrealname + '(' +this.sharehold_info_org[i].hstusername + ')',
+          institute   : this.sharehold_info_org[i].institute,
+          holdmoney   : this.sharehold_info_org[i].holdmoney,
+          isconfirmed : this.sharehold_info_org[i].isconfirmed,
+          slvmoney    : this.sharehold_info_org[i].slvmoney,
+          slvrealname : this.sharehold_info_org[i].slvrealname,
+          slvusername : this.sharehold_info_org[i].slvusername,
+          hstrealname : this.sharehold_info_org[i].hstrealname,
+          hstusername : this.sharehold_info_org[i].hstusername,
+        }
+      }
+      return sharehold_info;
     }
   },
   methods : {
+    initshareholdinfo : function(projectname){
+      this.$http.post('/projectssharehold/find',{
+        kind  : 'findall',
+        projectname : projectname
+      }).then(
+        function(response){
+          if(response.body.ok = 'ok'){
+            this.sharehold_info_org = response.body.shareholdlist;
+          }
+          else if(response.body.ok  = 'notok'){
+            this.sharehold_info_org = [];
+          }
+        },
+        function(){}
+      );
+    },
     create  : function(){
       this.createmsg  = '';
       if(this.projectname ==  ''){
@@ -428,6 +517,40 @@ export default {
     },
     deleteRow(index, rows) {
       rows.splice(index, 1);
+    },
+    upload_sharehold_info (projectname) {
+      for(var i=0;i<this.sharehold_info.length;i++){
+        console.log(i);
+        console.log(this.sharehold_info[i].holdmoney);
+        console.log(this.sharehold_info[i].slvmoney);
+      }
+      this.$http.post('/projectssharehold/update',{
+        kind      : 'oneprojectshareholdupdate',
+        projectname : projectname,
+        shareholdlist : this.sharehold_info
+      }).then(
+        function(response){
+          if(response.body.ok ==  'ok'){
+          }
+          else if(response.body.ok  = 'notok'){
+          }
+        },
+        function(){}
+      );
+    },
+    addonesharehold (projectname)  {
+      var blanksharehold;
+      blanksharehold  = {
+        institute   : '',
+        holdmoney   : 0,
+        isconfirmed : '',
+        slvmoney    : 0,
+        slvrealname : '',
+        slvusername : '',
+        hstrealname : '',
+        hstusername : '',
+      };
+      this.sharehold_info  = this.sharehold_info.unshift(blanksharehold);
     }
   },
   mounted : function () {

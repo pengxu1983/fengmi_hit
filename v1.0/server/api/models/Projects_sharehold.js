@@ -35,8 +35,8 @@ module.exports = {
     },
     isconfirmed     : {
       type          : 'string',
-      isIn          : ['yes','no'],
-      defaultsTo    : 'no'
+      isIn          : ['是','否'],
+      defaultsTo    : '否'
     },
     //  ╔═╗╔╦╗╔╗ ╔═╗╔╦╗╔═╗
     //  ║╣ ║║║╠╩╗║╣  ║║╚═╗
