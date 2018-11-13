@@ -8,6 +8,9 @@ module.exports = {
 
 
   inputs: {
+    kind      : {
+      type    : 'string'
+    },
     projectname : {
       type      : 'string'
     },
@@ -36,6 +39,7 @@ module.exports = {
 
   fn: async function (inputs, exits) {
     sails.log('/projectssharehold/find');
+    sails.log(inputs.projectname);
     var shareholds;
     if(inputs.kind  ==  'findall'){
       shareholds  = await Projects_sharehold.find({

@@ -91,6 +91,7 @@
             <td>
               <button type="button" class="btn btn-primary" data-toggle="modal" 
                 :data-target="'#shareholdedit'+oneproject.projectname"
+                @click="initshareholdinfo(oneproject.projectname)"
               >投资配额
               </button>
             </td>
@@ -123,7 +124,6 @@
       <hr />
       <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true"
         :id="'shareholdedit'+oneproject.projectname"
-        @click="initshareholdinfo(oneproject.projectname)"
       >
         <div class="modal-dialog modal-lg">
           <div class="modal-content">
@@ -346,18 +346,7 @@ export default {
       confirmstart  : '',
       confirmend    : '',
       projectlist   : [],
-      sharehold_info_org: [
-        {
-          slvrealname : '彭旭',
-          slvusername : 'pengxu',
-          institute   : '哈工大',
-          slvmoney    : 100,
-          holdmoney   : 0,
-          hstrealname : '邹星汉',
-          hstusername : 'zouxinghan',
-          isconfirmed : '是'
-        },
-      ],
+      sharehold_info_org: [],
       institute_options: [
         {
           value: '哈工大',
@@ -373,9 +362,9 @@ export default {
       isconfirmed_options : [
         {
           value : '是',
-          label : '否'
+          label : '是'
         },{
-          value : '是',
+          value : '否',
           label : '否'
         }
       ],
@@ -386,16 +375,27 @@ export default {
       var sharehold_info = [];
       for(var i=0;i<this.sharehold_info_org.length;i++){
         sharehold_info[i] = {
-          slvname     : this.sharehold_info_org[i].slvrealname + '(' +this.sharehold_info_org[i].slvusername + ')',
-          hstname     : this.sharehold_info_org[i].hstrealname + '(' +this.sharehold_info_org[i].hstusername + ')',
           institute   : this.sharehold_info_org[i].institute,
-          holdmoney   : this.sharehold_info_org[i].holdmoney,
+          holdmoney   : 0,
           isconfirmed : this.sharehold_info_org[i].isconfirmed,
           slvmoney    : this.sharehold_info_org[i].slvmoney,
           slvrealname : this.sharehold_info_org[i].slvrealname,
           slvusername : this.sharehold_info_org[i].slvusername,
           hstrealname : this.sharehold_info_org[i].hstrealname,
           hstusername : this.sharehold_info_org[i].hstusername,
+          projectname : this.sharehold_info_org[i].projectname
+        };
+        //no 代持人
+        if((this.sharehold_info_org[i].hstusername == '') && (this.sharehold_info_org[i].hstrealname == '')){
+          sharehold_info[i].holdmoney = this.sharehold_info_org[i].slvmoney;
+        }
+        else {
+        }
+
+        for(var j=0;j<this.sharehold_info_org.length;j++){
+          if((this.sharehold_info_org[j].hstusername == this.sharehold_info_org[i].slvusername) && (this.sharehold_info_org[j].hstrealname== this.sharehold_info_org[i].slvrealname)){
+            sharehold_info[i].holdmoney = sharehold_info[i].holdmoney + this.sharehold_info_org[j].slvmoney;
+          }
         }
       }
       return sharehold_info;
@@ -403,12 +403,16 @@ export default {
   },
   methods : {
     initshareholdinfo : function(projectname){
+      console.log('abc1');
+      console.log(projectname);
       this.$http.post('/projectssharehold/find',{
         kind  : 'findall',
         projectname : projectname
       }).then(
         function(response){
+      console.log('abc2');
           if(response.body.ok = 'ok'){
+      console.log('abc3');
             this.sharehold_info_org = response.body.shareholdlist;
           }
           else if(response.body.ok  = 'notok'){
@@ -531,6 +535,7 @@ export default {
       }).then(
         function(response){
           if(response.body.ok ==  'ok'){
+            this.initshareholdinfo(projectname);
           }
           else if(response.body.ok  = 'notok'){
           }
@@ -549,6 +554,7 @@ export default {
         slvusername : '',
         hstrealname : '',
         hstusername : '',
+        projectname : projectname
       };
       this.sharehold_info  = this.sharehold_info.unshift(blanksharehold);
     }
